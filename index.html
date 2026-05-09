@@ -1,113 +1,464 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>DeepCore</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEEPCORE // $DEEP</title>
 
-<style>
-body{
-margin:0;
-background:black;
-overflow:hidden;
-font-family:monospace;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-/* terminal bar */
-#terminal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:42px;
-background:#111;
-display:flex;
-align-items:center;
-padding-left:14px;
-z-index:10;
-}
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
 
-.dot{
-width:12px;
-height:12px;
-border-radius:50%;
-margin-right:8px;
-}
+    body{
+      background:#05070b;
+      color:#d9fff5;
+      font-family:'Space Grotesk',sans-serif;
+      overflow-x:hidden;
+      background-image:
+      radial-gradient(circle at top,#0b1320 0%,#05070b 60%);
+    }
 
-.red{background:#ff5f56;}
-.yellow{background:#ffbd2e;}
-.green{background:#27c93f;}
+    .noise{
+      position:fixed;
+      inset:0;
+      opacity:.06;
+      pointer-events:none;
+      background-image:url("https://grainy-gradients.vercel.app/noise.svg");
+      mix-blend-mode:screen;
+      z-index:999;
+    }
 
-#title{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
-color:#aaa;
-font-size:14px;
-}
+    .grid{
+      position:fixed;
+      inset:0;
+      background:
+      linear-gradient(rgba(0,255,200,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,200,.04) 1px, transparent 1px);
+      background-size:50px 50px;
+      z-index:-1;
+    }
 
-#x{
-position:absolute;
-right:20px;
-color:white;
-text-decoration:none;
-}
+    header{
+      padding:24px 8%;
+      border-bottom:1px solid rgba(0,255,200,.15);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      backdrop-filter:blur(8px);
+      position:sticky;
+      top:0;
+      background:rgba(5,7,11,.7);
+      z-index:50;
+    }
 
-model-viewer{
-width:100%;
-height:100vh;
-background:black;
-}
-</style>
+    .logo{
+      font-family:'Share Tech Mono',monospace;
+      color:#7fffd4;
+      font-size:26px;
+      letter-spacing:4px;
+    }
+
+    .live{
+      color:#7fffd4;
+      font-family:'Share Tech Mono',monospace;
+      border:1px solid rgba(0,255,200,.3);
+      padding:10px 18px;
+    }
+
+    .hero{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:100px 8%;
+      position:relative;
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      width:700px;
+      height:700px;
+      background:radial-gradient(circle,#00ffc344 0%,transparent 70%);
+      filter:blur(60px);
+      z-index:-1;
+    }
+
+    .hero-content{
+      max-width:1000px;
+    }
+
+    .badge{
+      display:inline-block;
+      border:1px solid rgba(0,255,200,.3);
+      padding:12px 22px;
+      margin-bottom:30px;
+      color:#8fffe0;
+      font-family:'Share Tech Mono',monospace;
+      letter-spacing:3px;
+      background:rgba(0,255,200,.05);
+    }
+
+    h1{
+      font-size:clamp(60px,10vw,140px);
+      line-height:.9;
+      margin-bottom:30px;
+      font-weight:700;
+      text-transform:uppercase;
+      text-shadow:
+      0 0 20px rgba(0,255,200,.35);
+    }
+
+    h1 span{
+      color:#00ffc3;
+    }
+
+    .desc{
+      font-size:22px;
+      line-height:1.8;
+      max-width:850px;
+      margin:auto;
+      color:#9bc7bf;
+    }
+
+    .cta-group{
+      display:flex;
+      gap:20px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:50px;
+    }
+
+    .btn{
+      padding:20px 38px;
+      border:1px solid #00ffc3;
+      background:transparent;
+      color:#dffff6;
+      text-decoration:none;
+      font-size:18px;
+      letter-spacing:2px;
+      transition:.25s;
+      font-family:'Share Tech Mono',monospace;
+    }
+
+    .btn:hover{
+      background:#00ffc3;
+      color:#05070b;
+      transform:translateY(-3px);
+      box-shadow:0 0 30px rgba(0,255,200,.35);
+    }
+
+    .btn.primary{
+      background:#00ffc3;
+      color:#05070b;
+      font-weight:700;
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      padding:0 8% 120px;
+    }
+
+    .stat-card{
+      border:1px solid rgba(0,255,200,.2);
+      background:rgba(0,255,200,.04);
+      padding:40px;
+      text-align:center;
+      backdrop-filter:blur(10px);
+    }
+
+    .stat-card h2{
+      font-size:52px;
+      color:#00ffc3;
+      margin-bottom:12px;
+    }
+
+    .stat-card p{
+      color:#8baaa3;
+      letter-spacing:2px;
+      font-family:'Share Tech Mono',monospace;
+    }
+
+    .section{
+      padding:120px 8%;
+    }
+
+    .section-title{
+      font-size:70px;
+      margin-bottom:30px;
+      text-transform:uppercase;
+      line-height:1;
+    }
+
+    .section-title span{
+      color:#00ffc3;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:30px;
+      margin-top:60px;
+    }
+
+    .card{
+      background:rgba(0,255,200,.04);
+      border:1px solid rgba(0,255,200,.18);
+      padding:40px;
+      transition:.3s;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+      135deg,
+      rgba(0,255,200,.15),
+      transparent 40%);
+      opacity:0;
+      transition:.3s;
+    }
+
+    .card:hover::before{
+      opacity:1;
+    }
+
+    .card:hover{
+      transform:translateY(-8px);
+      border-color:#00ffc3;
+    }
+
+    .card h3{
+      font-size:34px;
+      margin-bottom:20px;
+      color:#00ffc3;
+    }
+
+    .card p{
+      color:#9ab7b0;
+      line-height:1.9;
+      font-size:18px;
+    }
+
+    .leaderboard{
+      margin-top:60px;
+      border:1px solid rgba(0,255,200,.18);
+      overflow:hidden;
+    }
+
+    .leader-row{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      padding:24px;
+      border-bottom:1px solid rgba(0,255,200,.08);
+      font-family:'Share Tech Mono',monospace;
+    }
+
+    .leader-row.header{
+      background:rgba(0,255,200,.08);
+      color:#00ffc3;
+    }
+
+    .leader-row span:last-child{
+      text-align:right;
+      color:#00ffc3;
+    }
+
+    footer{
+      padding:80px 8%;
+      border-top:1px solid rgba(0,255,200,.15);
+      text-align:center;
+      color:#6d8b84;
+      font-family:'Share Tech Mono',monospace;
+      letter-spacing:3px;
+    }
+
+    @media(max-width:768px){
+
+      h1{
+        font-size:72px;
+      }
+
+      .section-title{
+        font-size:48px;
+      }
+
+      .desc{
+        font-size:18px;
+      }
+
+      .leader-row{
+        grid-template-columns:1fr;
+        gap:10px;
+      }
+
+      .leader-row span:last-child{
+        text-align:left;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="terminal">
-<div class="dot red"></div>
-<div class="dot yellow"></div>
-<div class="dot green"></div>
+  <div class="grid"></div>
+  <div class="noise"></div>
 
-<div id="title">DeepCore</div>
+  <header>
+    <div class="logo">DEEPCORE</div>
+    <div class="live">SYSTEM ONLINE</div>
+  </header>
 
-<a id="x" href="https://x.com/DeepcoreBase">@Deepcore</a>
-</div>
+  <section class="hero">
 
-<!-- 3D Model -->
-<model-viewer
-src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
-auto-rotate
-camera-controls
-exposure="1"
-shadow-intensity="1"
-style="background: radial-gradient(circle at center, #02020a, #000000);">
-</model-viewer>
+    <div class="hero-content">
 
-<script type="module"
-src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-</script>
+      <div class="badge">
+        POST-QUANTUM NETWORK // YEAR 2049
+      </div>
 
-<script>
+      <h1>
+        <span>$DEEP</span><br>
+        CORE UPRISING
+      </h1>
 
-/* create stars */
-const starCount = 200
+      <p class="desc">
+        Legacy crypto systems collapsed after quantum breaches exposed
+        vulnerable chains worldwide. Deepcore emerged from the shadows —
+        an autonomous AI-driven protocol powered by soul-linked compute
+        agents and post-quantum encryption.
+      </p>
 
-for(let i=0;i<starCount;i++){
+      <div class="cta-group">
+        <a href="#" class="btn primary">ENTER DEEPCORE</a>
+        <a href="#" class="btn">BUY $DEEP</a>
+      </div>
 
-const star = document.createElement("div")
+    </div>
 
-star.style.position="fixed"
-star.style.width="2px"
-star.style.height="2px"
-star.style.background="white"
-star.style.top=Math.random()*100+"vh"
-star.style.left=Math.random()*100+"vw"
-star.style.opacity=Math.random()
+  </section>
 
-document.body.appendChild(star)
+  <section class="stats">
 
-}
+    <div class="stat-card">
+      <h2>9.8M</h2>
+      <p>NODES ACTIVE</p>
+    </div>
 
-</script>
+    <div class="stat-card">
+      <h2>99.2%</h2>
+      <p>QUANTUM RESISTANCE</p>
+    </div>
+
+    <div class="stat-card">
+      <h2>41K</h2>
+      <p>DEEP AGENTS</p>
+    </div>
+
+  </section>
+
+  <section class="section">
+
+    <h2 class="section-title">
+      THE <span>BREACH</span>
+    </h2>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3>Quantum Collapse</h3>
+        <p>
+          In 2047, classical wallets became obsolete after multiple
+          quantum attacks shattered global trust in traditional
+          blockchain systems.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Deep Agents</h3>
+        <p>
+          AI entities known as Deep Agents now validate encrypted
+          compute layers through neural proof systems resistant
+          to quantum decryption.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>Soul Binding</h3>
+        <p>
+          Every Deepcore identity is linked to a unique encrypted
+          soul signature — impossible to duplicate, impossible
+          to fake.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="section">
+
+    <h2 class="section-title">
+      DEEPCORE <span>LEADERBOARD</span>
+    </h2>
+
+    <div class="leaderboard">
+
+      <div class="leader-row header">
+        <span>AGENT</span>
+        <span>BLOCKS</span>
+        <span>$DEEP</span>
+      </div>
+
+      <div class="leader-row">
+        <span>VOID-7</span>
+        <span>19.882</span>
+        <span>48.12</span>
+      </div>
+
+      <div class="leader-row">
+        <span>NEURAL-X</span>
+        <span>15.442</span>
+        <span>39.85</span>
+      </div>
+
+      <div class="leader-row">
+        <span>PHASE-9</span>
+        <span>11.021</span>
+        <span>27.66</span>
+      </div>
+
+      <div class="leader-row">
+        <span>YOU</span>
+        <span>0</span>
+        <span>0.00</span>
+      </div>
+
+    </div>
+
+    <div class="cta-group" style="margin-top:60px;">
+      <a href="#" class="btn primary">
+        JOIN THE DEEP
+      </a>
+    </div>
+
+  </section>
+
+  <footer>
+    DEEPCORE NETWORK // $DEEP // POST-QUANTUM ERA
+  </footer>
 
 </body>
 </html>
